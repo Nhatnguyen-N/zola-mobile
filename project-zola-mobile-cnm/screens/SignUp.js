@@ -1,12 +1,14 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
-//import { useToast } from "@chakra-ui/react";
+import "localstorage-polyfill"; //import { useToast } from "@chakra-ui/react";
+const link = "http://192.168.1.163:6000";
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
+  const [fullname, setName] = useState("");
   const [pic, setPic] = useState("");
 
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ const SignUp = ({ navigation }) => {
   }
   const submitHandler = async () => {
     setLoading(true);
-    if (!email || !password || !confirmpassword || !username) {
+    if (!fullname || !email || !password || !confirmpassword || !username) {
       // toast({
       //   title: "Please fill all fields",
       //   status: "warning",
@@ -96,33 +98,26 @@ const SignUp = ({ navigation }) => {
       console.log("9");
       const config = {
         headers: {
-          Accept: "application/json",
           "Content-Type": "application/json",
         },
       };
       console.log("10");
       const { data } = await axios.post(
-        "/api/user",
-        { username, email, password, pic },
+        `${link}/api/user`,
+        {
+          fullname,
+          username,
+          email,
+          password,
+          pic,
+        },
         config
       );
       console.log("11");
-      if (data.verify === false) {
-        //  toast({
-        //    title: "Account not verify. Please account verification",
-        //    status: "success",
-        //    duration: 2500,
-        //    isClosable: true,
-        //    position: "bottom",
-        //  });
-        console.log("4");
-      }
 
-      if (data.verify === true) {
-        localStorage.setItem("userInfo", JSON.stringify(data));
-        setLoading(false);
-        navigation.navigate("ChatScreen");
-      }
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setLoading(false);
+      navigation.navigate("SignIn");
     } catch (error) {
       // toast({
       //   title: "Sign up failed " + error,
@@ -140,6 +135,12 @@ const SignUp = ({ navigation }) => {
         <Text className="text-[50px] font-bold text-white">Sign Up</Text>
       </View>
       <View className="items-center mt-1">
+        <TextInput
+          className="border-2 w-[300px] h-[50px] p-3 mt-5 rounded-lg bg-white"
+          placeholder="FullName"
+          onChangeText={(e) => setName(e)}
+        />
+
         <TextInput
           className="border-2 w-[300px] h-[50px] p-3 mt-5 rounded-lg bg-white"
           placeholder="UserName"
