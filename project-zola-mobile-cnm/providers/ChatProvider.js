@@ -1,5 +1,7 @@
-const { createContext, useContext, useState, useEffect } = require("react");
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "localstorage-polyfill";
+import { useNavigation } from "@react-navigation/native";
 
 const ChatContext = createContext();
 
@@ -9,13 +11,15 @@ const ChatProvider = ({ children }) => {
   const [chats, setChats] = useState([]);
   const [closeSideBar, setCloseSideBar] = useState(false);
   const [notification, setNotification] = useState([]);
-  const navigator = useNavigate();
+  const nav = useNavigation();
   useEffect(() => {
     //fecth local storage
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     setUser(userInfo);
-    if (!userInfo) navigator("/");
-  }, [navigator]);
+    if (!userInfo) {
+      nav.navigate({ name: "SignIn" });
+    }
+  }, []);
 
   return (
     <ChatContext.Provider

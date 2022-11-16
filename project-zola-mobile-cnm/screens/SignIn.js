@@ -2,12 +2,16 @@ import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
 import { ChatState } from "../providers/ChatProvider";
-
+import "localstorage-polyfill";
+import { useNavigate } from "react-router-dom";
+const link = "http://192.168.1.163:6000";
 const SignIn = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { setUser } = ChatState();
+  //let navigate = useNavigate;
+
   const submitHandler = async () => {
     setLoading(true);
     if (!email || !password) {
@@ -30,8 +34,9 @@ const SignIn = ({ navigation }) => {
           "Content-type": "application/json",
         },
       };
+      console.log("7");
       const { data } = await axios.post(
-        `/api/user/login`,
+        `${link}/api/user/login`,
         { email, password },
         config
       );
@@ -43,11 +48,11 @@ const SignIn = ({ navigation }) => {
       //    position: "bottom",
       //  });
       console.log("2");
-      // localStorage.setItem("userInfo", JSON.stringify(data));
-      // const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      // setLoading(false);
-      // setUser(userInfo);
-      // navigation.navigate("ChatScreen");
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      setLoading(false);
+      setUser(userInfo);
+      navigation.navigate("ChatScreen");
     } catch (error) {
       //  toast({
       //    title: "Sign in failed! Your password or email address is invalid!  ",
